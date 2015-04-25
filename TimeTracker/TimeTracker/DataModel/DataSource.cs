@@ -21,8 +21,7 @@ namespace TimeTracker.DataModel
         public string Name { get; set; }
         public string Note { get; set; }
         public int CurrentTimer { get; set; }        
-        public string TotalSpendTime { get; set; }
-        
+        public string TotalSpendTime { get; set; }        
         public ObservableCollection<JiraTaskTime> SpendTime { get; set; }
 
         [IgnoreDataMember]
@@ -32,7 +31,8 @@ namespace TimeTracker.DataModel
 
         public JiraTask()
         {
-            TotalSpendTime = "00:00:00";
+            //TotalSpendTime = "00:00:00";
+            //SpendTime = new ObservableCollection<JiraTaskTime>();
             TimerButtonCommand = new TimerButtonClick();     
         }
 
@@ -40,7 +40,8 @@ namespace TimeTracker.DataModel
         {
             //throw new NotImplementedException();
             this.CurrentTimer++;
-            NotifyPropertyChanged("CurrentTimer");            
+            NotifyPropertyChanged("CurrentTimer");
+            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -111,7 +112,7 @@ namespace TimeTracker.DataModel
                     _jiraTask = (ObservableCollection<JiraTask>)jsonSerializer.ReadObject(stream);                   
                 }
             }
-            catch (Exception)
+            catch 
             {
                 _jiraTask = new ObservableCollection<JiraTask>();                
             }
@@ -119,7 +120,7 @@ namespace TimeTracker.DataModel
         //Save Data To Local Storage
         private async Task saveJiraTaskDataAsync()
         {
-            //calcTotalSpendTime();
+            calcTotalSpendTime();
             var jsonSerializer = new DataContractJsonSerializer(typeof(ObservableCollection<JiraTask>));
             using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(fileName, CreationCollisionOption.ReplaceExisting))
             {
@@ -144,29 +145,77 @@ namespace TimeTracker.DataModel
             
             await saveJiraTaskDataAsync();
         }
+
+        public async void SaveJiraTask()
+        {            
+            await saveJiraTaskDataAsync();
+        }
+        
         // Calculate TotalSpendTime
+
         private void calcTotalSpendTime()
         {            
             foreach(var jTask in _jiraTask)
 	        {
                 TimeSpan timeSpan = new TimeSpan();
-                foreach (var item in jTask.SpendTime)
-	            {
-                    timeSpan = timeSpan.Add(item.TimeHowLong);                  		 
-	            }
+                if (jTask.SpendTime != null)
+                {
+                    foreach (var item in jTask.SpendTime)
+                    {
+                        if (item.TimeHowLong != null)
+                            timeSpan = timeSpan.Add(item.TimeHowLong);
+                    }
+                }
+
                 jTask.TotalSpendTime = String.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-	        }	
+                //jTask.NotifyPropertyChanged("TotalSpendTime");
+	        }
+            
         }
 
+ 
+
+        private async void saveCurrentTaskState(JiraTask jiraTask)
+        {
+            if (jiraTask.CurrentTimer != 0)
+            {
+                if (jiraTask.SpendTime == null)
+                    jiraTask.SpendTime = new ObservableCollection<JiraTaskTime>();
+
+                JiraTaskTime currentTimer = new JiraTaskTime();
+                currentTimer.DateWhen = DateTime.Now;
+                currentTimer.TimeHowLong = new TimeSpan();
+                currentTimer.TimeHowLong = currentTimer.TimeHowLong.Add(TimeSpan.FromSeconds(jiraTask.CurrentTimer));
+                
+
+                jiraTask.SpendTime.Add(currentTimer);
+                await saveJiraTaskDataAsync();
+                
+            }
+
+        }
+
+
+        //start stop timer
         public void StartNewTimer(JiraTask jiraTask)
         {
+            if (jiraTask.Timer == null)
+            {
+                jiraTask.Timer = new DispatcherTimer();
+                jiraTask.Timer.Interval = new TimeSpan(0, 0, 1);
+                jiraTask.Timer.Tick += new EventHandler<object>(jiraTask.Timer_Tick);
+            }
 
-            jiraTask.Timer = new DispatcherTimer();
-            jiraTask.Timer.Interval = new TimeSpan(0, 0, 1);
-            jiraTask.Timer.Tick += new EventHandler<object>(jiraTask.Timer_Tick);
             if (jiraTask.Timer.IsEnabled)
-                jiraTask.Timer.Start();            
-            else jiraTask.Timer.Start();
+            {
+                jiraTask.Timer.Stop();
+                saveCurrentTaskState(jiraTask);
+                jiraTask.CurrentTimer = 0;
+            }
+            else
+            {                
+                jiraTask.Timer.Start();
+            }
         }
 
 

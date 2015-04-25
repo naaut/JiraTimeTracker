@@ -121,8 +121,14 @@ namespace TimeTracker
             jiraTask.ID = idTextBox.Text;
             jiraTask.Name = nameTextBox.Text;
             jiraTask.Note = noteTextBox.Text;
-            App.DataModel.AddJiraTask(jiraTask);
+            App.DataModel.AddJiraTask(jiraTask);            
             Frame.Navigate(typeof(MainPage));
+        }
+
+        private void nameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            taskNameTextBlock.Text = nameTextBox.Text;
+
         }
     }
 }
