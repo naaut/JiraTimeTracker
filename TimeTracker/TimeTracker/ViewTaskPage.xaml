@@ -6,7 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    DataContext="{Binding DefaultViewModel.Task, RelativeSource={RelativeSource Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
 
     <Grid x:Name="LayoutRoot">
 
@@ -19,17 +21,73 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="20,0,0,0">
             <TextBlock Text="Time Tracker" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="View Task" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock x:Name="taskNameHeadTextBox" Text="View Task" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            
+            <StackPanel>
+                <StackPanel>
+                    <TextBlock Text="ID:" FontSize="20"/>
+                    <TextBox x:Name="idTextBox"  />
+                    <TextBlock Text="Name:" FontSize="20"/>
+                    <TextBox x:Name="nameTextBox" TextChanged="nameTextBox_TextChanged" />
+                    <TextBlock Text="Notes:" FontSize="20"/>
+                    <TextBox x:Name="noteTextBox" Height="120" Margin="0,5,-0.333,0" VerticalAlignment="Top" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
+                        <TextBlock Text="Current:" 
+                                   FontSize="24" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CurrentTimeSpan}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="24" 
+                                   VerticalAlignment="Center"/>
+                        <Button Margin="20,0,0,0" 
+                                Content="Start/Stop" 
+                                VerticalAlignment="Center"
+                                Command="{Binding TimerButtonCommand}"
+                                CommandParameter="{Binding}"/>
+                        
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0">                        
+                        <TextBlock Text="Total:" 
+                                   FontSize="24" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalSpendTime}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="24" 
+                                   VerticalAlignment="Center"/>                        
+                        <Button x:Name="resetButton" Margin="20,0,0,0" 
+                                Content="Reset" 
+                                VerticalAlignment="Center"                            
+                                Click="resetButton_Click"/>
+                            <!--Command="{Binding ResetTotalSpendTimeButtonCommand}"
+                                CommandParameter="{Binding}"-->
+                    </StackPanel>
+                    
+                </StackPanel>
+            </StackPanel>
         </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Button x:Name="saveButton" Content="Save" Margin="20,0,0,0" Click="saveButton_Click" />
+            <Button x:Name="deleteButton" Content="Delete" Margin="20,0,0,0" Click="deleteButton_Click" />
+            <Button x:Name="cancelButton" Content="Cancel" Margin="20,0,0,0" Click="cancelButton_Click" />
+
+
+        </StackPanel>
+
+
     </Grid>
 </Page>
