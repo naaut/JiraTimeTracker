@@ -85,11 +85,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Command\ResetTimerButtonClick.cs" />
+    <Compile Include="Command\ResetTotalSpendTimeClick.cs" />
     <Compile Include="Command\TimerButtonClick.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Converters\DateToStringConverter.cs" />
     <Compile Include="DataModel\DataSource.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

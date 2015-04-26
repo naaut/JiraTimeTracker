@@ -48,7 +48,7 @@ namespace TimeTracker
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-
+            Frame.Navigate(typeof(ViewTaskPage), e.ClickedItem);
         }
 
 

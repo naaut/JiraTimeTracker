@@ -68,6 +68,9 @@ namespace TimeTracker
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+           
+
+
         }
 
         /// <summary>
