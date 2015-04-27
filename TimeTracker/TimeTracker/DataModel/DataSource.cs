@@ -187,6 +187,7 @@ namespace TimeTracker.DataModel
             foreach (var jiraTask in _jiraTask)
             {
                 await saveCurrentTaskState(jiraTask);
+                ResetTimer(jiraTask);
             }
             
         }
@@ -226,8 +227,8 @@ namespace TimeTracker.DataModel
                 JiraTaskTime currentTimer = new JiraTaskTime();
                 currentTimer.DateWhen = DateTime.Now;
                 currentTimer.TimeHowLong = new TimeSpan();
-                currentTimer.TimeHowLong = currentTimer.TimeHowLong.Add(TimeSpan.FromSeconds(jiraTask.CurrentTimer));                
-
+                currentTimer.TimeHowLong = currentTimer.TimeHowLong.Add(TimeSpan.FromSeconds(jiraTask.CurrentTimer));
+                
                 jiraTask.SpendTimeCollection.Add(currentTimer);
                 await saveJiraTaskDataAsync();
                 
