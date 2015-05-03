@@ -1,2 +1,2 @@
 # JiraTimeTracker
-Simple Time TRacker for Jira Tasks
+Simple Time Tracker Jira's Tasks for Windows Phone 8.1
