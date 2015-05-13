@@ -16,7 +16,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using TimeTracker.DataModel;
-using Windows.UI.Popups;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -25,13 +24,12 @@ namespace TimeTracker
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class ViewTaskPage : Page
+    public sealed partial class JiraConnectPage : Page
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
-        private JiraTask jiraTask;
 
-        public ViewTaskPage()
+        public JiraConnectPage()
         {
             this.InitializeComponent();
 
@@ -99,17 +97,9 @@ namespace TimeTracker
         /// </summary>
         /// <param name="e">Provides data for navigation methods and event
         /// handlers that cannot cancel the navigation request.</param>
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);
-
-            jiraTask = (JiraTask)e.Parameter;
-            this.defaultViewModel["Task"] = jiraTask;
-
-            taskNameHeadTextBox.Text = jiraTask.Name;
-            idTextBox.Text = jiraTask.ID;
-            nameTextBox.Text = jiraTask.Name;
-            noteTextBox.Text = jiraTask.Note;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -119,72 +109,46 @@ namespace TimeTracker
 
         #endregion
 
+        private async void connectButton_Click(object sender, RoutedEventArgs e)
+        {
+            JiraUser newUser = new JiraUser();
+
+            newUser.UserName = userNameTextBox.Text;
+            newUser.Password = passBox.Password;
+            newUser.ServerName = serverNameTextBox.Text;
+
+            Jira jira = new Jira();
+
+            myText.Text = await jira.LoginToJira(newUser);
+
+           
+
+           // if (jira.sessionValue != null)
+           //     Frame.Navigate(typeof(JiraCommitPage));
+
+
+  
+        }
+
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(MainPage));           
+            Frame.GoBack();
         }
 
-        private async void deleteButton_Click(object sender, RoutedEventArgs e)
+        private async void commitButton_Click(object sender, RoutedEventArgs e)
         {
-            var messageDialog = new MessageDialog("Are You Sure?");
-            messageDialog.Commands.Add(new UICommand("Delete", new UICommandInvokedHandler(this.CommandIvokedHandler)));
-            messageDialog.Commands.Add(new UICommand("Cancel", new UICommandInvokedHandler(this.CommandIvokedHandler)));
-            messageDialog.DefaultCommandIndex = 0;
-            messageDialog.CancelCommandIndex = 1;
-            await messageDialog.ShowAsync();           
-        }
+            JiraUser newUser = new JiraUser();
 
-        private void CommandIvokedHandler(IUICommand command)
-        {
-            if (command.Label == "Delete")
-            {
-                App.DataModel.DeleteJiraTask(jiraTask);
-                Frame.Navigate(typeof(MainPage));
-            }
-            else if (command.Label == "Cancel")
-            {
-                //
-            }
-        }
+            newUser.UserName = userNameTextBox.Text;
+            newUser.Password = passBox.Password;
+            newUser.ServerName = serverNameTextBox.Text;
 
-        private void saveButton_Click(object sender, RoutedEventArgs e)
-        {
-            jiraTask.ID = idTextBox.Text;
-            jiraTask.Name = nameTextBox.Text;
-            jiraTask.Note = noteTextBox.Text;
-           
-            App.DataModel.ChangeJiraTask(jiraTask);
+            Jira jira = new Jira();
 
-            Frame.Navigate(typeof(MainPage));
-        }
+            myText.Text = await jira.CommitToJira(newUser);
 
-        private void nameTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            taskNameHeadTextBox.Text = nameTextBox.Text;
-        }
+       
 
-        private async void resetButton_Click(object sender, RoutedEventArgs e)
-        {
-            var messageDialog = new MessageDialog("Are You Sure?");
-            messageDialog.Commands.Add(new UICommand("Delete", new UICommandInvokedHandler(this.ResetCommandIvokedHandler)));
-            messageDialog.Commands.Add(new UICommand("Cancel", new UICommandInvokedHandler(this.ResetCommandIvokedHandler)));
-            messageDialog.DefaultCommandIndex = 0;
-            messageDialog.CancelCommandIndex = 1;
-            await messageDialog.ShowAsync(); 
-
-        }
-
-        private void ResetCommandIvokedHandler(IUICommand command)
-        {
-            if (command.Label == "Delete")
-            {
-                App.DataModel.ResetTotalSpentTime(jiraTask);
-               
-            }
-            else if (command.Label == "Cancel")
-            {
-                //
-            }
         }
     }
 }

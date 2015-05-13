@@ -59,23 +59,22 @@
                                 CommandParameter="{Binding}"/>
                         
                     </StackPanel>
-                    
-                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0">                        
+                    <StackPanel Orientation="Horizontal" Margin="5,10,-0.333,0">
                         <TextBlock Text="Total:" 
-                                   FontSize="24" 
-                                   VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding TotalSpendTime}" 
-                                   Margin="10,0,0,0" 
-                                   FontSize="24" 
-                                   VerticalAlignment="Center"/>                        
+                    		FontSize="24" 
+                    		VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalSpentTime}" 
+                    		Margin="10,0,0,0" 
+                    		FontSize="24" 
+                    		VerticalAlignment="Center"/>
                         <Button x:Name="resetButton" Margin="20,0,0,0" 
-                                Content="Reset" 
-                                VerticalAlignment="Center"                            
-                                Click="resetButton_Click"/>
-                            <!--Command="{Binding ResetTotalSpendTimeButtonCommand}"
+                    		Content="Reset" 
+                    		VerticalAlignment="Center"                            
+                    		Click="resetButton_Click"/>
+                        <!--Command="{Binding ResetTotalSpendTimeButtonCommand}"
                                 CommandParameter="{Binding}"-->
                     </StackPanel>
-                    
+
                 </StackPanel>
             </StackPanel>
         </Grid>

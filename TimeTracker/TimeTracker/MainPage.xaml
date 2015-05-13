@@ -10,6 +10,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.BottomAppBar>
         <CommandBar>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Connect to Jira" HorizontalAlignment="Center" Click="AppBarButton_Click_1"/>
+            </CommandBar.SecondaryCommands>
             <AppBarButton Icon="Add" Click="AppBarButton_Click" Label="Add Task"/>
         </CommandBar>
     </Page.BottomAppBar>

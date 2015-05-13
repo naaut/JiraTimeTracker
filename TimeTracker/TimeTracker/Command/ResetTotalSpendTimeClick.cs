@@ -20,7 +20,7 @@ namespace TimeTracker.Command
 
         public void Execute(object parameter)
         {
-            App.DataModel.ResetTotalSpendTime((JiraTask)parameter);
+            App.DataModel.ResetTotalSpentTime((JiraTask)parameter);
         }
     }
 }

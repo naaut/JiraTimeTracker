@@ -49,6 +49,12 @@ namespace TimeTracker
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             Frame.Navigate(typeof(ViewTaskPage), e.ClickedItem);
+            
+        }
+
+        private void AppBarButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(JiraConnectPage));
         }
 
 

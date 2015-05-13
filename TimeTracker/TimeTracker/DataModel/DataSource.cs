@@ -12,73 +12,16 @@ using System.Windows.Input;
 using System.Runtime.Serialization;
 using TimeTracker.Command;
 using System.ComponentModel;
+using System.Net;
+using System.Diagnostics;
+
 
 namespace TimeTracker.DataModel
 {
-    public class JiraTask : INotifyPropertyChanged
-    {
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string Note { get; set; }
-        public int CurrentTimer { get; set; }
-        //public DateTime CurrentTimeSpan { get; set; }
-        public TimeSpan CurrentTimeSpan { get; set; }
-        public TimeSpan TotalSpendTime { get; set; }        
-        public ObservableCollection<JiraTaskTime> SpendTimeCollection { get; set; }
 
-        [IgnoreDataMember]
-        public ICommand TimerButtonCommand { get; set; }
-        [IgnoreDataMember]
-        public ICommand ResetTimerButtonCommand { get; set; }
-        [IgnoreDataMember]
-        public ICommand ResetTotalSpendTimeButtonCommand { get; set; }      
-        [IgnoreDataMember]
-        public DispatcherTimer Timer { get; set; }
-
-        public JiraTask()
-        {
-
-            TimerButtonCommand = new TimerButtonClick();
-            ResetTimerButtonCommand = new ResetTimerButtonClick();
-            ResetTotalSpendTimeButtonCommand = new ResetTotalSpendTimeClick();
-        }
-
-        internal void Timer_Tick(object sender, object e)
-        {
-            this.CurrentTimer++;
-            this.CurrentTimeSpan = this.CurrentTimeSpan.Add(TimeSpan.FromSeconds(1));
-
-            NotifyPropertyChanged("CurrentTimer");
-            NotifyPropertyChanged("CurrentTimeSpan");
-            
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-
-
-    }
 
     //When and How long tracked
-    public class JiraTaskTime
-    {
-        public DateTime DateWhen { get; set; }
-        public TimeSpan TimeHowLong { get; set; }
 
-        //public JiraTaskTime()
-        //{
-        //    DateTime DateWhen = DateTime.Now;
-        //    TimeSpan TimeHowLong = new TimeSpan();
-        //}
-    }
 
     public class DataSource
     {
@@ -129,7 +72,7 @@ namespace TimeTracker.DataModel
         //Save Data To Local Storage
         private async Task saveJiraTaskDataAsync()
         {
-            calcTotalSpendTime();
+            calcTotalSpentTime();
             var jsonSerializer = new DataContractJsonSerializer(typeof(ObservableCollection<JiraTask>));
             using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(fileName, CreationCollisionOption.ReplaceExisting))
             {
@@ -194,14 +137,14 @@ namespace TimeTracker.DataModel
         
         // Calculate TotalSpendTime
 
-        private void calcTotalSpendTime()
+        private void calcTotalSpentTime()
         {            
             foreach(var jTask in _jiraTask)
 	        {
                 TimeSpan timeSpan = new TimeSpan();
-                if (jTask.SpendTimeCollection != null)
+                if (jTask.SpentTimeCollection != null)
                 {
-                    foreach (var item in jTask.SpendTimeCollection)
+                    foreach (var item in jTask.SpentTimeCollection)
                     {
                         if (item.TimeHowLong != null)
                             timeSpan = timeSpan.Add(item.TimeHowLong);
@@ -209,8 +152,8 @@ namespace TimeTracker.DataModel
                     }                    
                 }
 
-                jTask.TotalSpendTime = timeSpan;
-                jTask.NotifyPropertyChanged("TotalSpendTime");
+                jTask.TotalSpentTime = timeSpan;
+                jTask.NotifyPropertyChanged("TotalSpentTime");
 	        }
             
         }
@@ -221,15 +164,15 @@ namespace TimeTracker.DataModel
         {
             if (jiraTask.CurrentTimer != 0)
             {
-                if (jiraTask.SpendTimeCollection == null)
-                    jiraTask.SpendTimeCollection = new ObservableCollection<JiraTaskTime>();
+                if (jiraTask.SpentTimeCollection == null)
+                    jiraTask.SpentTimeCollection = new ObservableCollection<JiraTaskTime>();
 
                 JiraTaskTime currentTimer = new JiraTaskTime();
                 currentTimer.DateWhen = DateTime.Now;
                 currentTimer.TimeHowLong = new TimeSpan();
                 currentTimer.TimeHowLong = currentTimer.TimeHowLong.Add(TimeSpan.FromSeconds(jiraTask.CurrentTimer));
                 
-                jiraTask.SpendTimeCollection.Add(currentTimer);
+                jiraTask.SpentTimeCollection.Add(currentTimer);
                 await saveJiraTaskDataAsync();
                 
             }
@@ -268,16 +211,20 @@ namespace TimeTracker.DataModel
             
         }
 
-        public async void ResetTotalSpendTime(JiraTask jiraTask)
+        public async void ResetTotalSpentTime(JiraTask jiraTask)
         {
             ResetTimer(jiraTask);
-            jiraTask.TotalSpendTime = TimeSpan.FromSeconds(0);
-            jiraTask.SpendTimeCollection = new ObservableCollection<JiraTaskTime>();
-            jiraTask.NotifyPropertyChanged("TotalSpendTime");            
+            jiraTask.TotalSpentTime = TimeSpan.FromSeconds(0);
+            jiraTask.SpentTimeCollection = new ObservableCollection<JiraTaskTime>();
+            jiraTask.NotifyPropertyChanged("TotalSpentTime");            
             await saveCurrentTaskState(jiraTask);
         }
 
         
+
+        
     }
+
+
 
 }
